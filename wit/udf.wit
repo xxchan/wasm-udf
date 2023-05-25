@@ -1,0 +1,45 @@
+default world rw {
+  export udf: self.udf
+}
+
+interface udf {
+  // in Arrow IPC Streaming Format
+  type record-batch = list<u8>
+
+  enum data-type {
+    dt-i16,
+    dt-i32,
+    dt-i64,
+    dt-bool,
+    dt-string,
+  }
+
+  record schema {
+    name: string,
+    data-type: data-type,
+  }
+
+
+  enum init-errno {
+    invalid-params,
+  }
+
+  enum eval-errno {
+    numeric-overflow,
+    division-by-zero,
+  }
+
+  union scalar {
+    s16,
+    s32,
+    s64,
+    bool,
+    string,
+  }
+
+  input-schema: func() -> schema
+  output-schema: func() -> schema
+
+  init: func(inputs: list<scalar>) -> result<_, init-errno>
+  eval: func(batch: record-batch) -> result<record-batch, eval-errno>
+}

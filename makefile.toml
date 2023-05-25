@@ -1,0 +1,48 @@
+[config]
+default_to_workspace = false
+skip_core_tasks = true
+skip_git_env_info = true
+skip_rust_env_info = false
+skip_crate_env_info = true
+
+[tasks.build-wasm]
+description = ""
+script = '''
+# debug build will be 120M binary...
+# without --target-dir, wasm build and normal build might affect each other?
+cargo build -p wasm-component --target=wasm32-unknown-unknown --target-dir=target/wasm --release
+
+wasm-tools component new ./target/wasm/wasm32-unknown-unknown/release/wasm_component.wasm \
+    -o wasm_component.wasm  
+    # --adapt ./wasi_snapshot_preview1.wasm
+
+wasm-tools validate wasm_component.wasm --features component-model
+
+# wasm-tools component wit wasm_component.wasm 
+'''
+
+[tasks.build-wasi]
+description = ""
+script = '''
+cargo build -p wasm-component --target=wasm32-wasi --target-dir=target/wasm --release
+
+wasm-tools component new ./target/wasm/wasm32-wasi/release/wasm_component.wasm \
+    -o wasm_component_wasi.wasm  \
+    --adapt ./wasi_snapshot_preview1.wasm
+
+# adaptor is needed. otherwise:
+# error: failed to encode a component from module
+# Caused by:
+#    0: module requires an import interface named `wasi_snapshot_preview1`
+
+wasm-tools validate wasm_component_wasi.wasm --features component-model
+
+# wasm-tools component wit wasm_component_wasi.wasm 
+'''
+
+[tasks.run]
+description = ""
+dependencies = ["build-wasm"]
+script = '''
+cargo run
+'''

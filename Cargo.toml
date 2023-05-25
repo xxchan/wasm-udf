@@ -1,0 +1,27 @@
+[package]
+name = "wasm-udf"
+version = "0.1.0"
+edition = "2021"
+
+
+[workspace]
+members = ["wasm-component"]
+
+[dependencies]
+
+wasmtime = { git = "https://github.com/bytecodealliance/wasmtime", rev = "5b93cdb", features = [
+    "component-model",
+] }
+# We need preview2-prototyping https://github.com/bytecodealliance/wasmtime/pull/6391
+wasmtime-wasi = { git = "https://github.com/bytecodealliance/wasmtime", rev = "5b93cdb" }
+async-trait = "0.1.68"
+tokio = { version = "1.28.1", features = ["full"] }
+
+arrow-array = "40.0.0"
+arrow-schema = "40.0.0"
+arrow-ipc = "40.0.0"
+
+
+[profile.release]
+# 5.2M -> 4.3M
+# lto = "thin"
