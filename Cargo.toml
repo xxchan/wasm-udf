@@ -5,7 +5,7 @@ edition = "2021"
 
 
 [workspace]
-members = ["wasm-component"]
+members = ["my_udf"]
 
 [dependencies]
 
@@ -17,9 +17,9 @@ wasmtime-wasi = { git = "https://github.com/bytecodealliance/wasmtime", rev = "5
 async-trait = "0.1.68"
 tokio = { version = "1.28.1", features = ["full"] }
 
-arrow-array = "40.0.0"
-arrow-schema = "40.0.0"
-arrow-ipc = "40.0.0"
+arrow-array = "41.0.0"
+arrow-schema = "41.0.0"
+arrow-ipc = "41.0.0"
 
 
 [profile.release]

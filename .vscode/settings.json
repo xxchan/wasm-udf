@@ -1,0 +1,4 @@
+{
+    "git.branchProtectionPrompt": "alwaysCommit",
+    "rust-analyzer.showUnlinkedFileNotification": false
+}

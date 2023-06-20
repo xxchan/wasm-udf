@@ -10,23 +10,23 @@ description = ""
 script = '''
 # debug build will be 120M binary...
 # without --target-dir, wasm build and normal build might affect each other?
-cargo build -p wasm-component --target=wasm32-unknown-unknown --target-dir=target/wasm --release
+cargo build -p my_udf --target=wasm32-unknown-unknown --target-dir=target/wasm --release
 
-wasm-tools component new ./target/wasm/wasm32-unknown-unknown/release/wasm_component.wasm \
-    -o wasm_component.wasm  
+wasm-tools component new ./target/wasm/wasm32-unknown-unknown/release/my_udf.wasm \
+    -o my_udf.wasm  
     # --adapt ./wasi_snapshot_preview1.wasm
 
-wasm-tools validate wasm_component.wasm --features component-model
+wasm-tools validate my_udf.wasm --features component-model
 
-# wasm-tools component wit wasm_component.wasm 
+# wasm-tools component wit my_udf.wasm 
 '''
 
 [tasks.build-wasi]
 description = ""
 script = '''
-cargo build -p wasm-component --target=wasm32-wasi --target-dir=target/wasm --release
+cargo build -p my_udf --target=wasm32-wasi --target-dir=target/wasm --release
 
-wasm-tools component new ./target/wasm/wasm32-wasi/release/wasm_component.wasm \
+wasm-tools component new ./target/wasm/wasm32-wasi/release/my_udf.wasm \
     -o wasm_component_wasi.wasm  \
     --adapt ./wasi_snapshot_preview1.wasm
 

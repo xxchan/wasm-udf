@@ -1,5 +1,5 @@
 [package]
-name = "wasm-component"
+name = "my_udf"
 version = "0.1.0"
 
 edition = "2021"
@@ -8,9 +8,9 @@ edition = "2021"
 
 [dependencies]
 wit-bindgen = "0.6.0"
-arrow-array = "40.0.0"
-arrow-schema = "40.0.0"
-arrow-ipc = "40.0.0"
+arrow-array = "41.0.0"
+arrow-schema = "41.0.0"
+arrow-ipc = "41.0.0"
 
 [lib]
 crate-type = ["cdylib"]

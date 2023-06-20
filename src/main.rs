@@ -42,8 +42,11 @@ async fn main() -> wasmtime::Result<()> {
 
     let engine = Engine::new(&config)?;
     let t1 = std::time::Instant::now();
-    let component = Component::from_file(&engine, "wasm_component.wasm")?;
-    println!("load wasm_component.wasm: {:?}", std::time::Instant::now() - t1);
+    let component = Component::from_file(&engine, "my_udf.wasm")?;
+    println!(
+        "load wasm_component.wasm: {:?}",
+        std::time::Instant::now() - t1
+    );
     // let component_wasi = Component::from_file(&engine, "wasm_component_wasi.wasm")?;
 
     let mut linker = Linker::new(&engine);
@@ -63,7 +66,9 @@ async fn main() -> wasmtime::Result<()> {
     // wasmtime_wasi::preview2::wasi::command::add_to_linker(&mut linker)?;
     // let (_bindings_wasi, _) = Rw::instantiate_async(&mut store, &component_wasi, &linker).await?;
 
-    let array = arrow_array::Int64Array::from(vec![-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]);
+    let input = arrow_array::Int64Array::from(vec![-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]);
+
+    // put input into IPC buffer
     let mut buf = vec![];
     {
         let schema = arrow_schema::Schema::new(vec![arrow_schema::Field::new(
@@ -73,16 +78,16 @@ async fn main() -> wasmtime::Result<()> {
         )]);
         let mut writer = arrow_ipc::writer::StreamWriter::try_new(&mut buf, &schema).unwrap();
         let batch =
-            arrow_array::RecordBatch::try_new(Arc::new(schema), vec![Arc::new(array)])
-                .unwrap();
+            arrow_array::RecordBatch::try_new(Arc::new(schema), vec![Arc::new(input)]).unwrap();
         writer.write(&batch).unwrap();
         writer.finish().unwrap();
     }
 
-    let output = bindings.udf().call_eval(&mut store, &buf).await??;
+    // call UDF.
+    let output = bindings.udf_v1().call_eval(&mut store, &buf).await??;
 
+    // Get output from IPC buffer
     let batch = arrow_ipc::reader::StreamReader::try_new(output.as_slice(), None).unwrap();
-
     for batch in batch {
         let batch = batch.unwrap();
         println!("{:?}", batch);
