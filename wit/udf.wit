@@ -1,6 +1,15 @@
+// // next version 
+// package rw:udf
+//
+// world rw {
+//  export udf-v1
+//  export udf-v2
+// }
+
 default world rw {
   export udf-v1: self.udf-v1
   export udf-v2: self.udf-v2
+  export udf-v3: self.udf-v3
 }
 
 interface udf-v1 {
@@ -85,5 +94,70 @@ interface udf-v2 {
   output-schema: func() -> schema
 
   init: func(inputs: list<scalar>) -> result<_, init-errno>
-  eval: func(batch: record-batch) -> result<record-batch, eval-errno>
+  eval: func(batch: record-batch) -> result<s32, eval-errno>
+}
+
+
+interface udf-v3 {
+  type arrow-buffer = list<u8>
+
+  record array-data {
+    data-type: data-type,
+    len: u32,
+    offset: u32,
+    buffers: list<arrow-buffer>,
+    // TODO: WIT doesn't support recursive types. So nested array needs a workaround
+    // https://github.com/WebAssembly/component-model/issues/56
+    // child-data: list<array-data>,
+    nulls: option<arrow-buffer>,
+  }
+
+  type column = list<u8>
+
+  record record-batch {
+    schema: schema,
+    columns: list<array-data>,
+    // row-count: u32,
+  }
+
+  enum data-type {
+    dt-i16,
+    dt-i32,
+    dt-i64,
+    dt-bool,
+    dt-string,
+  }
+
+  record field {
+    name: string,
+    data-type: data-type,
+  }
+
+  record schema {
+    fields: list<field>,
+  }
+
+
+  enum init-errno {
+    invalid-params,
+  }
+
+  enum eval-errno {
+    numeric-overflow,
+    division-by-zero,
+  }
+
+  union scalar {
+    s16,
+    s32,
+    s64,
+    bool,
+    string,
+  }
+
+  input-schema: func() -> schema
+  output-schema: func() -> schema
+
+  init: func(inputs: list<scalar>) -> result<_, init-errno>
+  eval: func(batch: record-batch) -> result<array-data, eval-errno>
 }
