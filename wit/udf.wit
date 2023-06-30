@@ -1,16 +1,10 @@
-// // next version 
-// package rw:udf
-//
-// world rw {
-//  export udf-v1
-//  export udf-v2
-// }
+ package rw:udf
 
-default world rw {
-  export udf-v1: self.udf-v1
-  export udf-v2: self.udf-v2
-  export udf-v3: self.udf-v3
-}
+ world rw {
+  export udf-v1
+  export udf-v2
+  export udf-v3
+ }
 
 interface udf-v1 {
   // in Arrow IPC Streaming Format

@@ -15,6 +15,8 @@ bindgen!({
     // async: true,
 });
 
+use exports::rw::udf::{udf_v1, udf_v2, udf_v3};
+
 struct MyState {
     wasi_ctx: wasmtime_wasi::preview2::WasiCtx,
     table: wasmtime_wasi::preview2::Table,
@@ -97,7 +99,7 @@ async fn main() -> anyhow::Result<()> {
         }
 
         // call UDF.
-        let output = bindings.udf_v1().call_eval(&mut store, &buf)??;
+        let output = bindings.rw_udf_udf_v1().call_eval(&mut store, &buf)??;
 
         // Get output from IPC buffer
         let batch = arrow_ipc::reader::StreamReader::try_new(output.as_slice(), None).unwrap();
@@ -125,7 +127,7 @@ async fn main() -> anyhow::Result<()> {
         }
 
         // call UDF.
-        let output = bindings.udf_v2().call_eval(&mut store, &buf)??;
+        let output = bindings.rw_udf_udf_v2().call_eval(&mut store, &buf)??;
         let ffi = output;
         // TODO: How to access wasm memory of the component???
     }
@@ -153,7 +155,7 @@ async fn main() -> anyhow::Result<()> {
             columns: &columns,
         };
 
-        let output = bindings.udf_v3().call_eval(&mut store, batch)??;
+        let output = bindings.rw_udf_udf_v3().call_eval(&mut store, batch)??;
         let data = arrow_data::ArrayData::from(output);
         let array = arrow_array::BooleanArray::from(data);
         println!("{:?}", array);

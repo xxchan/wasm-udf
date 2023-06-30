@@ -2,12 +2,11 @@ use std::sync::Arc;
 
 use arrow_array::Array;
 
-// wit_bindgen::generate!(in "../wit");
-// use exports::rw::udf::{udf_v1, udf_v2};
-
 wit_bindgen::generate!({
     path:"../wit"
 });
+
+use exports::rw::udf::{udf_v1, udf_v2, udf_v3};
 
 // Define a custom type and implement the generated `udf_v1::Udf` trait for it which
 // represents implementing all the necesssary exported interfaces for this

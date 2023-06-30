@@ -9,11 +9,9 @@ members = ["my_udf"]
 
 [dependencies]
 
-wasmtime = { git = "https://github.com/bytecodealliance/wasmtime", rev = "5b93cdb", features = [
-    "component-model",
-] }
+wasmtime = { version = "10", features = ["component-model"] }
 # We need preview2-prototyping https://github.com/bytecodealliance/wasmtime/pull/6391
-wasmtime-wasi = { git = "https://github.com/bytecodealliance/wasmtime", rev = "5b93cdb" }
+wasmtime-wasi = { version = "10" }
 async-trait = "0.1.68"
 tokio = { version = "1.28.1", features = ["full"] }
 

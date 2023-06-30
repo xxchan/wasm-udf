@@ -7,7 +7,7 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-wit-bindgen = "0.6.0"
+wit-bindgen = { git = "https://github.com/xxchan/wit-bindgen", rev = "c31577c" }
 arrow-array = "41.0.0"
 arrow-schema = "41.0.0"
 arrow-ipc = "41.0.0"
@@ -18,4 +18,3 @@ arrow-buffer = "41.0.0"
 
 [lib]
 crate-type = ["cdylib"]
-
