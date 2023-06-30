@@ -24,7 +24,10 @@ arrow = { version = "41.0.0", features = ["ffi"] }
 arrow-data = "41.0.0"
 arrow-buffer = "41.0.0"
 
-
+anyhow = "1.0.71"
+humansize = "2.1.3"
+stats_alloc = "0.1.10"
+# sysinfo = "0.29.0"
 
 [profile.release]
 # 5.2M -> 4.3M

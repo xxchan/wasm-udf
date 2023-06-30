@@ -1,10 +1,13 @@
-#![allow(unused)]
+﻿#![allow(unused)]
 
 use std::sync::Arc;
 
 use arrow_array::Array;
 use wasmtime::{component::*, AsContextMut};
 use wasmtime::{Config, Engine, Store};
+
+mod utils;
+use utils::instrument;
 
 bindgen!({
     // TODO: I don't understant very much why async is required (for wasi).
@@ -36,20 +39,17 @@ impl wasmtime_wasi::preview2::WasiView for MyState {
 }
 
 #[tokio::main]
-async fn main() -> wasmtime::Result<()> {
+async fn main() -> anyhow::Result<()> {
     // Configure an `Engine` and compile the `Component` that is being run for
     // the application.
     let mut config = Config::new();
     config.wasm_component_model(true);
     config.async_support(false);
 
-    let engine = Engine::new(&config)?;
-    let t1 = std::time::Instant::now();
-    let component = Component::from_file(&engine, "my_udf.wasm")?;
-    println!(
-        "load wasm_component.wasm: {:?}",
-        std::time::Instant::now() - t1
-    );
+    let engine = instrument("create engine", || Engine::new(&config))?;
+    let component = instrument("load component", || {
+        Component::from_file(&engine, "my_udf.wasm")
+    })?;
     // let component_wasi = Component::from_file(&engine, "wasm_component_wasi.wasm")?;
 
     let mut linker = Linker::new(&engine);
@@ -63,7 +63,9 @@ async fn main() -> wasmtime::Result<()> {
     let wasi_ctx = wasmtime_wasi::preview2::WasiCtxBuilder::new()
         .inherit_stdio() // this is needed for println to work
         .build(&mut table)?;
-    let mut store = Store::new(&engine, MyState { table, wasi_ctx });
+    let mut store = instrument("create store", || {
+        Store::new(&engine, MyState { table, wasi_ctx })
+    });
     let (bindings, instance) = Rw::instantiate(&mut store, &component, &linker)?;
 
     // WASI
